@@ -58,6 +58,8 @@ FlowView(QWidget *parent)
     //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
 
+void FlowView::dragEnterEvent(QDragEnterEvent *event){}
+void FlowView::dropEvent(QDropEvent *event){}
 
 FlowView::
 FlowView(FlowScene *scene, QWidget *parent)
@@ -112,7 +114,7 @@ FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
     return;
-    
+
   if (itemAt(event->pos()))
   {
     QGraphicsView::contextMenuEvent(event);
