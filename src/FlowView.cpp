@@ -111,6 +111,8 @@ void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
+    return;
+    
   if (itemAt(event->pos()))
   {
     QGraphicsView::contextMenuEvent(event);
