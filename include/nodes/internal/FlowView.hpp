@@ -66,8 +66,8 @@ private:
   QPointF _clickPos;
   QBrush _brushPattern;
   QImage _patternImage;
-  int _numScheduledScalings;
-  int _numScheduledMovings;
+  int _numScheduledScalings = 0;
+  int _numScheduledMovings = 0;
   QPointF _differenceMoving;
 
 
