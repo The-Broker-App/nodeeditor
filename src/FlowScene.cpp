@@ -62,7 +62,7 @@ FlowScene(QObject * parent)
 FlowScene::
 ~FlowScene()
 {
-//  clearScene();
+  clearScene();
 }
 
 
