@@ -54,6 +54,13 @@ FlowView(QWidget *parent)
   auto patternImage =  QPixmap(":/content/images/editor_pattern.svg");
   _brushPattern = QBrush(patternImage);
   _brushPattern.setStyle(Qt::TexturePattern);
+  setBackgroundBrush(_brushPattern);
+
+//    QGraphicsSvgItem *item = new QGraphicsSvgItem(":/content/images/editor_pattern.svg");
+//    addItem(item);
+
+//  setBackgroundBrush(_brushPattern);
+
 
     //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
@@ -344,36 +351,10 @@ mouseMoveEvent(QMouseEvent *event)
     // Make sure shift is not being pressed
     if ((event->modifiers() & Qt::ShiftModifier) == 0)
     {
-        _differenceMoving = _clickPos - mapToScene(event->pos());
-
-        int numSteps = std::max(_differenceMoving.x(), _differenceMoving.y());
-        _numScheduledMovings += numSteps;
-        if (_numScheduledMovings * numSteps < 0) // if user moved the wheel in another direction, we reset previously scheduled scalings
-            _numScheduledMovings = numSteps;
-
-        QTimeLine *anim = new QTimeLine(350, this);
-        anim->setUpdateInterval(20);
-
-        connect(anim, SIGNAL (valueChanged(qreal)), SLOT (movingTime(qreal)));
-        connect(anim, SIGNAL (finished()), SLOT (movingAnimFinished()));
-        anim->start();
+      QPointF difference = _clickPos - mapToScene(event->pos());
+      setSceneRect(sceneRect().translated(difference.x(), difference.y()));
     }
   }
-}
-
-void FlowView::movingTime(qreal x) {
-    qreal deltaX = _differenceMoving.x() / 300.0;
-    qreal deltaY = _differenceMoving.y() / 300.0;
-    setSceneRect(sceneRect().translated(deltaX, deltaY));
-}
-
-void FlowView::movingAnimFinished() {
-    if (_numScheduledMovings > 0)
-        _numScheduledMovings--;
-    else
-        _numScheduledMovings++;
-
-    sender()->~QObject();
 }
 
 
@@ -399,22 +380,35 @@ drawBackground(QPainter* painter, const QRectF& r)
       double bottom = std::floor(tl.y() / gridStep - 0.5);
       double top    = std::floor (br.y() / gridStep + 1.0);
 
+      //draw dots
+//        for (int xi = int(left); xi <= int(right); ++xi)
+//        {
+//            for (int yi = int(bottom); yi <= int(top); ++yi)
+//            {
+//              QLineF line(xi * gridStep, (bottom + yi) * gridStep ,
+//                          xi * gridStep, (top + yi) * gridStep) ;
+//              qreal radius = 2.0f;
+//              painter->drawEllipse(line.p1(),radius,radius);
+//              painter->drawEllipse(line.p2(),radius,radius);
+//            }
+//        }
+
       // vertical lines
-      for (int xi = int(left); xi <= int(right); ++xi)
-      {
-        QLineF line(xi * gridStep, bottom * gridStep,
-                    xi * gridStep, top * gridStep );
+//      for (int xi = int(left); xi <= int(right); ++xi)
+//      {
+//        QLineF line(xi * gridStep, bottom * gridStep,
+//                    xi * gridStep, top * gridStep );
+//
+//        painter->drawLine(line);
+//      }
 
-        painter->drawLine(line);
-      }
-
-//       horizontal lines
-      for (int yi = int(bottom); yi <= int(top); ++yi)
-      {
-        QLineF line(left * gridStep, yi * gridStep,
-                    right * gridStep, yi * gridStep );
-        painter->drawLine(line);
-      }
+      // horizontal lines
+//      for (int yi = int(bottom); yi <= int(top); ++yi)
+//      {
+//        QLineF line(left * gridStep, yi * gridStep,
+//                    right * gridStep, yi * gridStep );
+//        painter->drawLine(line);
+//      }
     };
 
   auto const &flowViewStyle = StyleCollection::flowViewStyle();
