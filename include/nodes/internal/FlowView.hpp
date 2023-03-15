@@ -30,9 +30,12 @@ public:
   void setScene(FlowScene *scene);
 
 public Q_SLOTS:
+
+  void scaleUp();
+
+  void scaleDown();
+
   void deleteSelectedNodes();
-  void scalingTime(qreal x);
-  void animFinished();
 
 protected:
 
@@ -64,8 +67,6 @@ private:
   QPointF _clickPos;
   QBrush _brushPattern;
   QImage _patternImage;
-  int _numScheduledScalings;
-
 
   FlowScene* _scene;
 };

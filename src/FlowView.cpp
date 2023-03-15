@@ -7,7 +7,6 @@
 #include <QtWidgets/QMenu>
 #include <QSvgRenderer>
 #include <QGraphicsSvgItem>
-#include <QDebug>
 
 #include <QtCore/QRectF>
 #include <QtCore/QPointF>
@@ -228,46 +227,49 @@ void
 FlowView::
 wheelEvent(QWheelEvent *event)
 {
-    QPoint delta = event->angleDelta();
-    if (delta.y() == 0)
-    {
-        event->ignore();
-        return;
-    }
-    int numDegrees = delta.y() / 8;
-    int numSteps = numDegrees / 15; // see QWheelEvent documentation
-    _numScheduledScalings += numSteps;
-    if (_numScheduledScalings * numSteps < 0) // if user moved the wheel in another direction, we reset previously scheduled scalings
-        _numScheduledScalings = numSteps;
+  QPoint delta = event->angleDelta();
 
-    QTimeLine *anim = new QTimeLine(350, this);
-    anim->setUpdateInterval(20);
+  if (delta.y() == 0)
+  {
+    event->ignore();
+    return;
+  }
 
-    connect(anim, SIGNAL (valueChanged(qreal)), SLOT (scalingTime(qreal)));
-    connect(anim, SIGNAL (finished()), SLOT (animFinished()));
-    anim->start();
-}
-void FlowView::scalingTime(qreal x) {
+  double const d = delta.y() / std::abs(delta.y());
 
-    qreal factor = 1.0 + qreal(_numScheduledScalings) / 300.0;
-    QTransform t = transform();
-
-    if (t.m11() > 2.5 && factor > 1.0f)
-        return;
-
-    if (t.m11() < 0.4 && factor < 1.0f)
-        return;
-
-    scale(factor, factor);
+  if (d > 0.0)
+    scaleUp();
+  else
+    scaleDown();
 }
 
-void FlowView::animFinished() {
-    if (_numScheduledScalings > 0)
-        _numScheduledScalings--;
-    else
-        _numScheduledScalings++;
-    sender()->~QObject();
+
+void
+FlowView::
+scaleUp()
+{
+  double const step   = 1.2;
+  double const factor = std::pow(step, 1.0);
+
+  QTransform t = transform();
+
+  if (t.m11() > 2.0)
+    return;
+
+  scale(factor, factor);
 }
+
+
+void
+FlowView::
+scaleDown()
+{
+  double const step   = 1.2;
+  double const factor = std::pow(step, -1.0);
+
+  scale(factor, factor);
+}
+
 
 void
 FlowView::
