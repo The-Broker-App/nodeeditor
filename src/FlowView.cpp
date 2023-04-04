@@ -109,7 +109,7 @@ FlowView::setScene(FlowScene *scene)
 
   delete _deleteSelectionAction;
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
-  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+//  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
 }
