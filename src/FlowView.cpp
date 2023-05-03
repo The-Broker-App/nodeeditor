@@ -312,6 +312,8 @@ void FlowView::recentralize() {
 
     total /= _scene->items().size();
 
+    resetTransform();
+
     auto newRect = sceneRect();
     newRect.moveTo(-total.x(), total.y());
     setSceneRect(newRect);
