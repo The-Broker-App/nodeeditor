@@ -24,6 +24,9 @@ public:
   QAction* clearSelectionAction() const;
 
   QAction* deleteSelectionAction() const;
+
+  QAction* recentralizeSelectionAction() const;
+
   void dragEnterEvent(QDragEnterEvent *event) override;
   void dropEvent(QDropEvent *event) override;
 
@@ -36,6 +39,8 @@ public Q_SLOTS:
   void scaleDown();
 
   void deleteSelectedNodes();
+
+  void recentralize();
 
 protected:
 
@@ -63,6 +68,7 @@ private:
 
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
+  QAction* _recentralizeSelectionAction;
 
   QPointF _clickPos;
   QBrush _brushPattern;

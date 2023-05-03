@@ -33,6 +33,7 @@ FlowView(QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
+  , _recentralizeSelectionAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
@@ -90,6 +91,9 @@ deleteSelectionAction() const
   return _deleteSelectionAction;
 }
 
+QAction* FlowView::recentralizeSelectionAction() const {
+    return _recentralizeSelectionAction;
+}
 
 void
 FlowView::setScene(FlowScene *scene)
@@ -112,6 +116,11 @@ FlowView::setScene(FlowScene *scene)
 //  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
+
+  delete _recentralizeSelectionAction;
+  _recentralizeSelectionAction = new QAction(QStringLiteral("Recentralize Selection"), this);
+  connect(_recentralizeSelectionAction, &QAction::triggered, this, &FlowView::recentralize);
+  addAction(_recentralizeSelectionAction);
 }
 
 
@@ -295,6 +304,18 @@ deleteSelectedNodes()
   }
 }
 
+void FlowView::recentralize() {
+    QPointF total;
+    for (QGraphicsItem * item : _scene->items()) {
+        total += item->pos();
+    }
+
+    total /= _scene->items().size();
+
+    auto newRect = sceneRect();
+    newRect.moveTo(-total.x(), total.y());
+    setSceneRect(newRect);
+}
 
 void
 FlowView::
