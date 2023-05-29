@@ -51,10 +51,11 @@ FlowView(QWidget *parent)
   setCacheMode(QGraphicsView::CacheBackground);
   setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 
-  auto patternImage =  QPixmap(":/content/images/editor_pattern.svg");
-  _brushPattern = QBrush(patternImage);
-  _brushPattern.setStyle(Qt::TexturePattern);
-  setBackgroundBrush(_brushPattern);
+//  auto patternImage =  QPixmap(":/content/images/editor_pattern.svg");
+//  _brushPattern = QBrush(patternImage);
+    _brushPattern = QBrush(QColor("#292B2B"));
+    _brushPattern.setStyle(Qt::Dense7Pattern);
+    setBackgroundBrush(_brushPattern);
 
 //    QGraphicsSvgItem *item = new QGraphicsSvgItem(":/content/images/editor_pattern.svg");
 //    addItem(item);
