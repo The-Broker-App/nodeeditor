@@ -274,6 +274,11 @@ void
 FlowView::
 scaleDown()
 {
+    QTransform t = transform();
+
+    if (t.m11() < 0.1)
+        return;
+
   double const step   = 1.2;
   double const factor = std::pow(step, -1.0);
 
@@ -306,12 +311,13 @@ deleteSelectedNodes()
 }
 
 void FlowView::recentralize() {
-    QPointF total;
+    QPointF total(0, 0);
     for (QGraphicsItem * item : _scene->items()) {
         total += item->pos();
     }
 
-    total /= _scene->items().size();
+    if (!_scene->items().empty())
+        total /= _scene->items().size();
 
     resetTransform();
 
