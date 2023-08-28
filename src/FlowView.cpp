@@ -41,21 +41,48 @@ FlowView(QWidget *parent)
 
   auto const &flowViewStyle = StyleCollection::flowViewStyle();
 
-  setBackgroundBrush(flowViewStyle.BackgroundColor);
+//  setBackgroundBrush(flowViewStyle.BackgroundColor);
 
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-  setCacheMode(QGraphicsView::CacheBackground);
-  setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+//  setCacheMode(QGraphicsView::CacheBackground);
+  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
 //  auto patternImage =  QPixmap(":/content/images/editor_pattern.svg");
 //  _brushPattern = QBrush(patternImage);
-    _brushPattern = QBrush(QColor("#292B2B"));
-    _brushPattern.setStyle(Qt::Dense7Pattern);
-    setBackgroundBrush(_brushPattern);
+//    _brushPattern = QBrush(QColor("#292B2B"));
+//    _brushPattern.setStyle(Qt::Dense7Pattern);
+//    setBackgroundBrush(_brushPattern);
+//
+//// 1. Crie um QPixmap
+//    QPixmap pixmap(32, 32);
+//    pixmap.fill(QColor("#292B2B")); // Preencha com a cor de fundo
+//
+//
+//// 2. Desenhe o padrão no QPixmap
+//    QPainter painter(&pixmap);
+//    painter.setPen(QColor("#FFFFFF")); // Cor do padrão
+//    for (int i = 0; i < pixmap.width(); i++) {
+//        for (int j = 0; j < pixmap.height(); j++) {
+//            // Este é um exemplo simples que simula o Dense7Pattern.
+//            // Ajuste conforme necessário para se aproximar do padrão desejado.
+//            if ((i + j) % 2 == 0) {
+//                painter.drawPoint(i, j);
+//            }
+//        }
+//    }
+//    painter.end();
+//
+//// 3. Use o QPixmap como textura para o QBrush
+//    QBrush brush(pixmap);
+//
+//// 4. Aplique o QBrush ao QGraphicsView
+//    setBackgroundBrush(brush);
+//    setRenderHint(QPainter::SmoothPixmapTransform);
+
 
 //    QGraphicsSvgItem *item = new QGraphicsSvgItem(":/content/images/editor_pattern.svg");
 //    addItem(item);
@@ -389,73 +416,143 @@ mouseMoveEvent(QMouseEvent *event)
   }
 }
 
-
 void
 FlowView::
 drawBackground(QPainter* painter, const QRectF& r)
 {
 
-    setRenderHint(QPainter::Antialiasing);
-    QGraphicsView::drawBackground(painter, r);
-    painter->fillRect(r,_brushPattern);
+    setRenderHint(QPainter::Antialiasing, true);
+//    Cor de fundo
+    painter->fillRect(r, QColor(25, 27, 27));
+
+    // Salve a transformação atual
+    QTransform savedTransform = painter->transform();
+
+    // Desative a transformação enquanto desenha as cruzes
+    painter->setTransform(QTransform());
+
+    // Defina a cor da caneta
+    painter->setPen(QColor(37, 39, 39)); // Cor do padrão
+
+    qreal spacing = 32;  // Espaçamento entre cruzes
+
+    // Calcula o retângulo visível baseado na viewport
+    QRectF visibleArea = painter->viewport();
+
+    int startX = static_cast<int>(visibleArea.left() - std::fmod(visibleArea.left(), spacing));
+    int startY = static_cast<int>(visibleArea.top() - std::fmod(visibleArea.top(), spacing));
+
+    qreal factor = transform().m11();
+    qreal crossSize = 10.0*factor;
+
+    for (int x = startX; x < visibleArea.right(); x += spacing) {
+        for (int y = startY; y < visibleArea.bottom(); y += spacing) {
+            painter->drawLine(QPointF(x-crossSize/2, y), QPointF(x+crossSize/2, y));  // linha horizontal da cruz
+            painter->drawLine(QPointF(x, y-crossSize/2), QPointF(x, y+crossSize/2));  // linha vertical da cruz
+        }
+    }
+
+    // Restaure a transformação original do painter
+    painter->setTransform(savedTransform);
 
     return;
-  auto drawGrid =
-    [&](double gridStep)
-    {
-      QRect   windowRect = rect();
-      QPointF tl = mapToScene(windowRect.topLeft());
-      QPointF br = mapToScene(windowRect.bottomRight());
+//    setRenderHint(QPainter::Antialiasing);
+//    QGraphicsView::drawBackground(painter, r);
+//    painter->fillRect(r,_brushPattern);
 
-      double left   = std::floor(tl.x() / gridStep - 0.5);
-      double right  = std::floor(br.x() / gridStep + 1.0);
-      double bottom = std::floor(tl.y() / gridStep - 0.5);
-      double top    = std::floor (br.y() / gridStep + 1.0);
-
-      //draw dots
-//        for (int xi = int(left); xi <= int(right); ++xi)
-//        {
-//            for (int yi = int(bottom); yi <= int(top); ++yi)
-//            {
-//              QLineF line(xi * gridStep, (bottom + yi) * gridStep ,
-//                          xi * gridStep, (top + yi) * gridStep) ;
-//              qreal radius = 2.0f;
-//              painter->drawEllipse(line.p1(),radius,radius);
-//              painter->drawEllipse(line.p2(),radius,radius);
-//            }
-//        }
-
-      // vertical lines
-//      for (int xi = int(left); xi <= int(right); ++xi)
-//      {
-//        QLineF line(xi * gridStep, bottom * gridStep,
-//                    xi * gridStep, top * gridStep );
+//     Cor de fundo
+//    painter->fillRect(r, QColor(25, 27, 27));
 //
-//        painter->drawLine(line);
-//      }
+//    // Define o padrão
+//    painter->setPen(QColor(37, 39, 39)); // Cor do padrão
+//
+//
+//    // Ajustar o espaçamento com base no zoom, se desejar
+//    qreal factor = transform().m11();
+//    qreal spacing = 32; // Espaçamento para o padrão
+//
+//    spacing /= factor;
+//
+//    painter->save();  // Salva o estado atual do painter
+//
+////    QTransform savedTransform = painter->transform();
+////    painter->setTransform(QTransform());
+//
+//
+//    for (qreal x = r.left(); x < r.right(); x += spacing) {
+//        for (qreal y = r.top(); y < r.bottom(); y += spacing) {
+//            painter->drawPoint(QPointF(x + 1, y));
+//            painter->drawPoint(QPointF(x + 2, y));
+//            painter->drawPoint(QPointF(x - 1, y));
+//            painter->drawPoint(QPointF(x - 2, y));
+//            painter->drawPoint(QPointF(x, y + 1));
+//            painter->drawPoint(QPointF(x, y + 2));
+//            painter->drawPoint(QPointF(x, y - 1));
+//            painter->drawPoint(QPointF(x, y - 2));
+//            painter->drawPoint(QPointF(x, y));
+//        }
+//    }
+//
+//    painter->restore();  // Restaura o estado anterior do painter
 
-      // horizontal lines
-//      for (int yi = int(bottom); yi <= int(top); ++yi)
-//      {
-//        QLineF line(left * gridStep, yi * gridStep,
-//                    right * gridStep, yi * gridStep );
-//        painter->drawLine(line);
-//      }
-    };
 
-  auto const &flowViewStyle = StyleCollection::flowViewStyle();
-
-  QBrush bBrush = backgroundBrush();
-
-  QPen pfine(flowViewStyle.FineGridColor, 1.0);
-
-  painter->setPen(pfine);
-  drawGrid(15);
-
-  QPen p(flowViewStyle.CoarseGridColor, 1.0);
-
-  painter->setPen(p);
-  drawGrid(150);
+    return;
+//  auto drawGrid =
+//    [&](double gridStep)
+//    {
+//      QRect   windowRect = rect();
+//      QPointF tl = mapToScene(windowRect.topLeft());
+//      QPointF br = mapToScene(windowRect.bottomRight());
+//
+//      double left   = std::floor(tl.x() / gridStep - 0.5);
+//      double right  = std::floor(br.x() / gridStep + 1.0);
+//      double bottom = std::floor(tl.y() / gridStep - 0.5);
+//      double top    = std::floor (br.y() / gridStep + 1.0);
+//
+//      //draw dots
+////        for (int xi = int(left); xi <= int(right); ++xi)
+////        {
+////            for (int yi = int(bottom); yi <= int(top); ++yi)
+////            {
+////              QLineF line(xi * gridStep, (bottom + yi) * gridStep ,
+////                          xi * gridStep, (top + yi) * gridStep) ;
+////              qreal radius = 2.0f;
+////              painter->drawEllipse(line.p1(),radius,radius);
+////              painter->drawEllipse(line.p2(),radius,radius);
+////            }
+////        }
+//
+//      // vertical lines
+////      for (int xi = int(left); xi <= int(right); ++xi)
+////      {
+////        QLineF line(xi * gridStep, bottom * gridStep,
+////                    xi * gridStep, top * gridStep );
+////
+////        painter->drawLine(line);
+////      }
+//
+//      // horizontal lines
+////      for (int yi = int(bottom); yi <= int(top); ++yi)
+////      {
+////        QLineF line(left * gridStep, yi * gridStep,
+////                    right * gridStep, yi * gridStep );
+////        painter->drawLine(line);
+////      }
+//    };
+//
+//  auto const &flowViewStyle = StyleCollection::flowViewStyle();
+//
+//  QBrush bBrush = backgroundBrush();
+//
+//  QPen pfine(flowViewStyle.FineGridColor, 1.0);
+//
+//  painter->setPen(pfine);
+//  drawGrid(15);
+//
+//  QPen p(flowViewStyle.CoarseGridColor, 1.0);
+//
+//  painter->setPen(p);
+//  drawGrid(150);
 }
 
 
